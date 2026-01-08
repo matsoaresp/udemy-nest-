@@ -11,20 +11,19 @@ export class RecadosController {
     @HttpCode(HttpStatus.OK)
     @Get()
     findAll (@Query() pagination: any){
-        const {limit = 100, offset = 100} = pagination;
         return this.recadosService.findAll();
     }
 
     @HttpCode(HttpStatus.OK)
     @Get(':id')
     findOne (@Param('id') id: string) {
-        return `Essa rota retorna ${id}`;
+        return this.recadosService.findOne(id);
     }
 
     
     @Post()
     create(@Body() body: any) {
-        return body;
+        return this.recadosService.create(body);
     }
 
     @Patch(':id')
