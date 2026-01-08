@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { ConceptsAutomaticService } from './concepts-automatic.service';
 
-@Module({})
+@Module({
+  providers: [ConceptsAutomaticService]
+})
 export class ConceptsAutomaticModule {}
