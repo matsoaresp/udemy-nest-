@@ -1,4 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class ConceptsAutomaticService {}
+export class ConceptsAutomaticService {
+    getHome () {
+        return 'conceitos-automatico'
+    }
+}
