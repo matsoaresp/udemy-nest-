@@ -4,7 +4,8 @@ import { RecadosService } from './recados.service';
 
 @Module({
   controllers: [RecadosController],
-  providers: [RecadosService]
+  providers: [RecadosService],
+  imports: []
 })
 export class RecadosModule {
     
