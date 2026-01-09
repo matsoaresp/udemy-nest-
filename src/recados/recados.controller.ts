@@ -31,13 +31,15 @@ export class RecadosController {
 
     @HttpCode(HttpStatus.OK)
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updateRecadoDto: UpdateRecadoDto) {
+    update(@Param('id') id: string, @Body() updateRecadoDto: UpdateRecadoDto)
+    {
+
        return this.recadosService.update(id,updateRecadoDto)
     }
     
     @HttpCode(HttpStatus.OK)
     @Delete(':id')
-    remove (@Param('id') id:string) {
+    remove (@Param('id') id: number) {
         return this.recadosService.delete(id);
     }
 }

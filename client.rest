@@ -30,9 +30,7 @@ Content-Type: application/json
 {
     "texto": "Novo recado",
     "de": "Joana",
-    "para": "Joao",
-    "lido": false,
-    "data": "2024-08-08T11:32:39.6242" 
+    "para": "Joao"
 }
 
 ### Atualiza um recado
@@ -41,7 +39,6 @@ Content-Type: application/json
 
 {
   "texto": "testmbme",
-  "bla": "sei la"
 
 }
 
