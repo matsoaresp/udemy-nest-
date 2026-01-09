@@ -75,7 +75,7 @@ export class RecadosService {
 
     }
 
-    delete(id:string) {
+    delete(id:number) {
         const recadoExistenteIndex = this.recados.findIndex(
             item => item.id === +id,
         );
