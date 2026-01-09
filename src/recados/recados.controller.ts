@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, NotFoundException, Param, Patch, Post, Put, Query } from '@nestjs/common';
 import { RecadosService } from './recados.service';
+import { CreateRecadoDto } from './dto/create-recado.dto';
 
 @Controller('recados')
 export class RecadosController {
@@ -10,8 +11,9 @@ export class RecadosController {
 
     @HttpCode(HttpStatus.OK)
     @Get()
-    findAll (@Query() pagination: any){
-        return this.recadosService.findAll();
+    findAll (){
+        const recado = this.recadosService.findAll();
+        return recado
     }
 
     @HttpCode(HttpStatus.OK)
@@ -20,22 +22,21 @@ export class RecadosController {
         return this.recadosService.findOne(id);
     }
 
-    
+    @HttpCode(HttpStatus.CREATED)
     @Post()
-    create(@Body() body: any) {
-        return this.recadosService.create(body);
+    create(@Body() createRecadoDto: CreateRecadoDto) {
+        return this.recadosService.create(createRecadoDto);
     }
 
+    @HttpCode(HttpStatus.OK)
     @Patch(':id')
-    update(@Param(':id') id: string, @Body() body: any) {
-        return {
-            id,
-                ...body
-        }
+    update(@Param('id') id: string, @Body() body: any) {
+       return this.recadosService.update(id,body)
     }
     
+    @HttpCode(HttpStatus.OK)
     @Delete(':id')
-    remove (@Param(':id') id:string) {
-        return id;
+    remove (@Param('id') id:string) {
+        return this.recadosService.delete(id);
     }
 }
