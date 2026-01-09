@@ -44,3 +44,10 @@ Content-Type: application/json
 
 ### Deleta um recado
 DELETE {{baseUrl}}/recados/2
+
+### Busca todas as músicas
+POST{{baseUrl}}/songs
+Content-Type: application/json 
+{
+  
+}
