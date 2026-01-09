@@ -28,7 +28,7 @@ POST {{baseUrl}}/recados/
 Content-Type: application/json
 
 {
-    "texto": 1,
+    "texto": "Novo recado",
     "de": "Joana",
     "para": "Joao",
     "lido": false,
@@ -40,11 +40,9 @@ PATCH  {{baseUrl}}/recados/2/
 Content-Type: application/json
 
 {
-    "texto": "Novhhjuo Recado",
-    "de": "Joana",
-    "para": "Joao",
-    "lido": false,
-    "data": "2024-08-08T11:32:39.6242" 
+  "texto": "testmbme",
+  "bla": "sei la"
+
 }
 
 ### Deleta um recado
