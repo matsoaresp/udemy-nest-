@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Recados } from './entities/recados.entity';
 import { last } from 'rxjs';
+import { CreateRecadoDto } from './dto/create-recado.dto';
+import { UpdateRecadoDto } from './dto/update-recado.dto';
 
 @Injectable()
 export class RecadosService {
-    private lastd = 1;
+    private lastid = 1;
     private recados: Recados[] = [
         {
         id: 1,
@@ -16,25 +18,74 @@ export class RecadosService {
         },
     ];
 
+    throwNotFoundError(){
+       throw new NotFoundException('Recado não encontrado')
+    }
+    
+
     findAll() {
-        return this.recados;
+        const recados = this.recados;
+        if (!recados){
+            this.throwNotFoundError();
+        }
+        return recados;
     }
 
     findOne (id: string) {
-        return this.recados.find(item => item.id === +id);
+        const recado = this.recados.find(item => item.id === +id);
+        if (!recado) 
+            this.throwNotFoundError();
+
+        return recado;
     }
 
-    create (body: any) {
-        this.lastd++;
-        const id = this.lastd;
+    create (createRecadoDto: CreateRecadoDto) {
+        this.lastid++;
+        const id = this.lastid;
         const newRecado = {
             id,
-            ...body,
+            ...createRecadoDto,
+            lido:false,
+            data: new Date(),
         };
-        this.recados.push(newRecado);
+        const criarRecado = this.recados.push(newRecado);
+        if (!criarRecado)
+            throw new NotFoundException('Erro ao criar recado')
         return newRecado
     }
 
+    update (id: string, updateRecadoDto: UpdateRecadoDto) {
+        const recadoExistenteIndex = this.recados.findIndex(
+            item => item.id === +id,
+        );
 
+        if (recadoExistenteIndex < 0){
+            this.throwNotFoundError();
+        }
+            const recadoExistente = this.recados[recadoExistenteIndex];
+
+             this.recados[recadoExistenteIndex] = {
+            ...recadoExistente,
+            ...updateRecadoDto,
+            lido:false,
+            data: new Date(),
+        }
+        
+        return this.recados[recadoExistenteIndex]
+
+    }
+
+    delete(id:string) {
+        const recadoExistenteIndex = this.recados.findIndex(
+            item => item.id === +id,
+        );
+
+        if (recadoExistenteIndex < 0)
+            this.throwNotFoundError();
+        
+        const recado = this.recados[recadoExistenteIndex];
+        this.recados.splice(recadoExistenteIndex, 1)
+        return recado
+    }
 }
 
