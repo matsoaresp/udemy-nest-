@@ -4,25 +4,26 @@ import { CreateSongDto } from './dto/create-song.dto';
 import { UpdateSongDto } from './dto/update-song.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UpdateRecadoDto } from 'src/recados/dto/update-recado.dto';
 
 @Injectable()
 export class SongsService {
 
-    constructor (
+    constructor(
         @InjectRepository(Songs)
         private readonly songRepository: Repository<Songs>
-    ){}
+    ) { }
 
 
     private lastId: 1;
-    private readonly songs: Songs [] = [
-        
+    private readonly songs: Songs[] = [
+
         {
-        id: 1,
-        nome: "Telephone",
-        artista: "Lady Gaga",
-        album: "Sei la",
-        data: new Date(),
+            id: 1,
+            nome: "Telephone",
+            artista: "Lady Gaga",
+            album: "Sei la",
+            data: new Date(),
 
         }
     ]
@@ -32,61 +33,58 @@ export class SongsService {
     }
 
 
-     async findAll(){
-      const songs =  await this.songRepository.find()
-      return songs
+    async findAll() {
+        const songs = await this.songRepository.find()
+        return songs
     }
 
-    async findOne (id: string){
+    async findOne(id: string) {
 
         const song = await this.songRepository.findOne({
-            where: {id: Number(id)},
+            where: { id: Number(id) },
         });
-        if (!song) 
+        if(!song)
             this.throwNotFoundError()
         return song
     }
 
-    async create (createSongsDto: CreateSongDto) {
-      
-        const newSong = {         
+    async create(createSongsDto: CreateSongDto) {
+
+        const newSong = {
             ...createSongsDto,
             data: new Date()
-        }   
-        const song = await this.songRepository.create(newSong)  
-        if (!song) 
+        }
+        const song = await this.songRepository.create(newSong)
+        if(!song)
             this.throwNotFoundError();
         return this.songRepository.save(newSong)
 
     }
 
-    update(id:string, updateSongDto: UpdateSongDto){
-
-        const songsExistenteIndex = this.songs.findIndex(
-            item => item.id === +id,
-        );
-
-        if (songsExistenteIndex < 0){
-            this.throwNotFoundError();
-        }
-
-        const songExistente = this.songs[songsExistenteIndex];
-        this.songs[songsExistenteIndex] = {
-            ...songExistente,
+    async update(id: string, updateSongDto: UpdateSongDto) {
+        
+        const song = await this.songRepository.preload({
+            id: Number(id),
             ...updateSongDto,
+        });
+
+        if(!song) {
+            return this.throwNotFoundError();
         }
-        return this.songs[songsExistenteIndex]
+
+        return this.songRepository.save(song);
     }
 
-    async remove (id:string){
 
-    const song = await this.songRepository.findOne({
-        where:{id: Number(id)}
-    }); 
+    async remove(id: string) {
 
-    if (!song){
-       return this.throwNotFoundError();
-    }
-    return this.songRepository.remove(song)
+        const song = await this.songRepository.findOne({
+            where: { id: Number(id) }
+        });
+
+        if(!song) {
+            return this.throwNotFoundError();
+        }
+        return this.songRepository.remove(song)
     }
 }
