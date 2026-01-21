@@ -85,7 +85,7 @@ export class RecadosService {
         
         const recado = this.recados[recadoExistenteIndex];
         this.recados.splice(recadoExistenteIndex, 1)
-        return recado
+        return recado;
     }
 }
 
