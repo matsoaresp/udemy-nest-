@@ -60,7 +60,7 @@ export class SongsService {
     update(id:string, updateSongDto: UpdateSongDto){
 
         const songsExistenteIndex = this.songs.findIndex(
-            item => item.id == +id,
+            item => item.id === +id,
         );
 
         if (songsExistenteIndex < 0){
@@ -75,17 +75,18 @@ export class SongsService {
         return this.songs[songsExistenteIndex]
     }
 
+    remove (id:string){
 
-     delete(id:number) {
-        const recadoExistenteIndex = this.songs.findIndex(
+        const songsExistenteIndex = this.songs.findIndex (
             item => item.id === +id,
         );
 
-        if (recadoExistenteIndex < 0)
+        if (songsExistenteIndex < 0) {
             this.throwNotFoundError();
-        
-        const songs = this.songs[recadoExistenteIndex];
-        this.songs.splice(recadoExistenteIndex, 1)
-        return songs
+        }
+
+        const song = this.songs[songsExistenteIndex]
+        this.songs.splice(songsExistenteIndex, 1)
+        return song;
     }
 }
