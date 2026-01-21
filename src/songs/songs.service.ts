@@ -2,9 +2,17 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Songs } from './entities/songs.entity';
 import { CreateSongDto } from './dto/create-song.dto';
 import { UpdateSongDto } from './dto/update-song.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class SongsService {
+
+    constructor (
+        @InjectRepository(Songs)
+        private readonly songRepository: Repository<Songs>
+    ){}
+
 
     private lastId: 1;
     private readonly songs: Songs [] = [
@@ -24,35 +32,31 @@ export class SongsService {
     }
 
 
-    findAll(){
-       const musicas = this.songs;
-       if (!musicas)
-            this.throwNotFoundError();
-       
-       return musicas
+     async findAll(){
+      const songs =  await this.songRepository.find()
+      return songs
     }
 
     async findOne (id: string){
 
-        const song = this.songs.find(item => item.id === +id)
-
-        if (song) 
+        const song = await this.songRepository.findOne({
+            where: {id: Number(id)},
+        });
+        if (!song) 
             this.throwNotFoundError()
         return song
     }
 
-    create (createSongsDto: CreateSongDto) {
-        this.lastId++
-        const id = this.lastId;
-        const newSong = {
-            id,   
+    async create (createSongsDto: CreateSongDto) {
+      
+        const newSong = {         
             ...createSongsDto,
             data: new Date()
         }   
-        const song = this.songs.push(newSong)  
+        const song = await this.songRepository.create(newSong)  
         if (!song) 
             this.throwNotFoundError();
-        return song
+        return this.songRepository.save(newSong)
 
     }
 
@@ -74,18 +78,15 @@ export class SongsService {
         return this.songs[songsExistenteIndex]
     }
 
-    remove (id:string){
+    async remove (id:string){
 
-        const songsExistenteIndex = this.songs.findIndex (
-            item => item.id === +id,
-        );
+    const song = await this.songRepository.findOne({
+        where:{id: Number(id)}
+    }); 
 
-        if (songsExistenteIndex < 0) {
-            this.throwNotFoundError();
-        }
-
-        const song = this.songs[songsExistenteIndex]
-        this.songs.splice(songsExistenteIndex, 1)
-        return song;
+    if (!song){
+       return this.throwNotFoundError();
+    }
+    return this.songRepository.remove(song)
     }
 }
