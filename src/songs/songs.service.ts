@@ -6,7 +6,6 @@ import { UpdateSongDto } from './dto/update-song.dto';
 @Injectable()
 export class SongsService {
 
-    private lastId: 1;
     private readonly songs: Songs [] = [
         
         {
@@ -18,6 +17,8 @@ export class SongsService {
 
         }
     ]
+
+    private lastId = this.songs.length;
 
     throwNotFoundError() {
         throw new NotFoundException('Musicas não encontradas')
@@ -36,7 +37,7 @@ export class SongsService {
 
         const song = this.songs.find(item => item.id === +id)
 
-        if (song) 
+        if (!song) 
             this.throwNotFoundError()
         return song
     }
@@ -52,7 +53,7 @@ export class SongsService {
         const song = this.songs.push(newSong)  
         if (!song) 
             this.throwNotFoundError();
-        return song
+        return newSong
 
     }
 
@@ -72,5 +73,19 @@ export class SongsService {
             ...updateSongDto,
         }
         return this.songs[songsExistenteIndex]
+    }
+
+
+     delete(id:number) {
+        const recadoExistenteIndex = this.songs.findIndex(
+            item => item.id === +id,
+        );
+
+        if (recadoExistenteIndex < 0)
+            this.throwNotFoundError();
+        
+        const songs = this.songs[recadoExistenteIndex];
+        this.songs.splice(recadoExistenteIndex, 1)
+        return songs
     }
 }
