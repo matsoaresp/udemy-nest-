@@ -1,15 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConceptsManualModule } from 'src/concepts-manual/concepts-manual.module';
-import { ConceptsAutomaticModule } from 'src/concepts-automatic/concepts-automatic.module';
 import { RecadosModule } from 'src/recados/recados.module';
-import { SongsModule } from 'src/songs/songs.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SongsModule } from 'src/songs/songs.module';
 
 @Module({
-  imports: [ConceptsManualModule,
-    ConceptsAutomaticModule, 
+  imports: [ 
     RecadosModule,
     SongsModule,
     TypeOrmModule.forRoot({
