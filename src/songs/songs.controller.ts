@@ -4,7 +4,7 @@ import { CreateSongDto } from './dto/create-song.dto';
 import { UpdateRecadoDto } from 'src/recados/dto/update-recado.dto';
 import { UpdateSongDto } from './dto/update-song.dto';
 
-@Controller('songs')
+@Controller('songs') // Código com persistencia de dados no banco de dados Postgres/ TypeOrm
 export class SongsController {
 
     constructor(private readonly songsService: SongsService){

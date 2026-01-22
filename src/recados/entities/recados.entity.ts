@@ -1,4 +1,4 @@
-export class Recados {
+export class Recados { // Entitie sem typeOrm
 
 id: number;
 texto:string;

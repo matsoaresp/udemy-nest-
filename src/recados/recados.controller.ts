@@ -3,7 +3,7 @@ import { RecadosService } from './recados.service';
 import { CreateRecadoDto } from './dto/create-recado.dto';
 import { UpdateRecadoDto } from './dto/update-recado.dto';
 
-@Controller('recados')
+@Controller('recados') //Código com persistencia de dados local
 export class RecadosController {
 
     constructor(private readonly recadosService: RecadosService) {

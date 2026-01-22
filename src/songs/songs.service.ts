@@ -2,11 +2,18 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Songs } from './entities/songs.entity';
 import { CreateSongDto } from './dto/create-song.dto';
 import { UpdateSongDto } from './dto/update-song.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
-export class SongsService {
+export class SongsService { // Código com persistencia de dados no banco de dados Postgres/ TypeOrm
 
-    private lastId: 1;
+    constructor(
+        @InjectRepository(Songs)
+        private readonly songRepository: Repository<Songs>
+    ) {}
+
+      private lastId: 1;
     private readonly songs: Songs [] = [
         
         {
@@ -23,6 +30,15 @@ export class SongsService {
         throw new NotFoundException('Musicas não encontradas')
     }
 
+    throwDuplicateError() {
+        throw new NotFoundException('Musicas duplicada, crie outra música')
+    }
+
+    throwEmptyValues() {
+        throw new NotFoundException('Não é possivel inserir valores vazios')
+    }
+    
+
 
     findAll(){
        const musicas = this.songs;
@@ -32,27 +48,46 @@ export class SongsService {
        return musicas
     }
 
-    async findOne (id: string){
+    async findOne(id: string) { 
 
-        const song = this.songs.find(item => item.id === +id)
+       
+        const stringToNumber = parseInt(id)
 
-        if (song) 
+        if (stringToNumber <= 0 || isNaN(stringToNumber)){
+            this.throwNotFoundError()
+        } 
+
+        const song = await this.songRepository.findOne({
+            where: {id: stringToNumber},
+        });
+        if(!song)
             this.throwNotFoundError()
         return song
     }
 
-    create (createSongsDto: CreateSongDto) {
-        this.lastId++
-        const id = this.lastId;
-        const newSong = {
-            id,   
+    async create(createSongsDto: CreateSongDto) {
+
+         const newSong = {
             ...createSongsDto,
             data: new Date()
-        }   
-        const song = this.songs.push(newSong)  
-        if (!song) 
-            this.throwNotFoundError();
-        return song
+        }
+
+        if (newSong.nome === '' || newSong.artista === '') {
+            this.throwEmptyValues();
+        }
+
+        const existingSong = await this.songRepository.findOne({
+            where: {nome: createSongsDto.nome,
+                artista: createSongsDto.artista 
+            }
+        })
+
+        if (existingSong) {
+            this.throwDuplicateError();
+        }
+        const song = await this.songRepository.create(newSong)
+       
+        return this.songRepository.save(song)
 
     }
 
