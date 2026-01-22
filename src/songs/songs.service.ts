@@ -8,12 +8,13 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class SongsService { // Código com persistencia de dados no banco de dados Postgres/ TypeOrm
 
-    constructor(
+    constructor (
         @InjectRepository(Songs)
         private readonly songRepository: Repository<Songs>
-    ) {}
+    ){}
 
-      private lastId: 1;
+
+    private lastId: 1;
     private readonly songs: Songs [] = [
         
         {
@@ -40,12 +41,9 @@ export class SongsService { // Código com persistencia de dados no banco de dad
     
 
 
-    findAll(){
-       const musicas = this.songs;
-       if (!musicas)
-            this.throwNotFoundError();
-       
-       return musicas
+     async findAll(){
+      const songs =  await this.songRepository.find()
+      return songs
     }
 
     async findOne(id: string) { 
@@ -109,18 +107,15 @@ export class SongsService { // Código com persistencia de dados no banco de dad
         return this.songs[songsExistenteIndex]
     }
 
-    remove (id:string){
+    async remove (id:string){
 
-        const songsExistenteIndex = this.songs.findIndex (
-            item => item.id === +id,
-        );
+    const song = await this.songRepository.findOne({
+        where:{id: Number(id)}
+    }); 
 
-        if (songsExistenteIndex < 0) {
-            this.throwNotFoundError();
-        }
-
-        const song = this.songs[songsExistenteIndex]
-        this.songs.splice(songsExistenteIndex, 1)
-        return song;
+    if (!song){
+       return this.throwNotFoundError();
+    }
+    return this.songRepository.remove(song)
     }
 }
