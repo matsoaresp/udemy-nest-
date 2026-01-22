@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Songs } from './entities/songs.entity';
 
 @Module({
-    controllers: [SongsController],
+    controllers: [SongsController], // Código com persistencia de dados no banco de dados Postgres/ TypeOrm
     providers: [SongsService],
     imports: [TypeOrmModule.forFeature([Songs]),]
 })

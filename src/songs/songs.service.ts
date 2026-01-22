@@ -6,7 +6,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class SongsService {
+export class SongsService { // Código com persistencia de dados no banco de dados Postgres/ TypeOrm
 
     constructor (
         @InjectRepository(Songs)
@@ -31,32 +31,61 @@ export class SongsService {
         throw new NotFoundException('Musicas não encontradas')
     }
 
+    throwDuplicateError() {
+        throw new NotFoundException('Musicas duplicada, crie outra música')
+    }
+
+    throwEmptyValues() {
+        throw new NotFoundException('Não é possivel inserir valores vazios')
+    }
+    
+
 
      async findAll(){
       const songs =  await this.songRepository.find()
       return songs
     }
 
-    async findOne (id: string){
+    async findOne(id: string) { 
+
+       
+        const stringToNumber = parseInt(id)
+
+        if (stringToNumber <= 0 || isNaN(stringToNumber)){
+            this.throwNotFoundError()
+        } 
 
         const song = await this.songRepository.findOne({
-            where: {id: Number(id)},
+            where: {id: stringToNumber},
         });
-        if (!song) 
+        if(!song)
             this.throwNotFoundError()
         return song
     }
 
-    async create (createSongsDto: CreateSongDto) {
-      
-        const newSong = {         
+    async create(createSongsDto: CreateSongDto) {
+
+         const newSong = {
             ...createSongsDto,
             data: new Date()
-        }   
-        const song = await this.songRepository.create(newSong)  
-        if (!song) 
-            this.throwNotFoundError();
-        return this.songRepository.save(newSong)
+        }
+
+        if (newSong.nome === '' || newSong.artista === '') {
+            this.throwEmptyValues();
+        }
+
+        const existingSong = await this.songRepository.findOne({
+            where: {nome: createSongsDto.nome,
+                artista: createSongsDto.artista 
+            }
+        })
+
+        if (existingSong) {
+            this.throwDuplicateError();
+        }
+        const song = await this.songRepository.create(newSong)
+       
+        return this.songRepository.save(song)
 
     }
 
