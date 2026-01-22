@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Put } from '@nestjs/common';
 import { SongsService } from './songs.service';
 import { CreateSongDto } from './dto/create-song.dto';
 import { UpdateRecadoDto } from 'src/recados/dto/update-recado.dto';
@@ -20,7 +20,7 @@ export class SongsController {
 
     @HttpCode(HttpStatus.OK)
     @Get()
-    findOne (@Param ('id') id:string) {
+    findOne (@Param ('id', ParseIntPipe) id: number) {
         return this.songsService.findOne(id)
     }
 
@@ -32,7 +32,7 @@ export class SongsController {
 
     @HttpCode(HttpStatus.OK)
     @Patch(':id')
-    updateSong(@Param('id') id:string, 
+    updateSong(@Param('id', ParseIntPipe) id:number, 
                 @Body() updateSongDto: UpdateSongDto) {
             
             return this.songsService.update(id, updateSongDto)
