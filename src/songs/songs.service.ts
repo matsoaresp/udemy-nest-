@@ -21,16 +21,15 @@ export class SongsService { // Código com persistencia de dados no banco de dad
     throwEmptyValues() {
         throw new NotFoundException('Não é possivel inserir valores vazios')
     }
-
     async findAll() {
         const songs = await this.songRepository.find()
         return songs
     }
 
-    async findOne(id: string) {
+    async findOne(id: number) {
 
 
-        const stringToNumber = parseInt(id)
+        const stringToNumber = Number(id)
 
         if(stringToNumber <= 0 || isNaN(stringToNumber)) {
             this.throwNotFoundError()
@@ -71,16 +70,21 @@ export class SongsService { // Código com persistencia de dados no banco de dad
 
     }
 
-    async update(id: string, updateSongDto: UpdateSongDto) {
+    async update(id: number, updateSongDto: UpdateSongDto) {
 
-        
-        await this.findOne(id)
-        await this.songRepository.update(id, updateSongDto)
-        return this.findOne(id)
 
+       const song = await this.songRepository.preload({
+        id,
+        ...updateSongDto,
+       });
+
+       if(!song || isNaN(id)) return this.throwNotFoundError
+
+       await this.songRepository.save(song)
+       return song
     }
 
-    async remove(id: string) {
+    async remove(id: number) {
 
         const song = await this.songRepository.findOne({
             where: { id: Number(id) }
