@@ -19,7 +19,7 @@ export class RecadosController {
 
     @HttpCode(HttpStatus.OK)
     @Get(':id')
-    findOne (@Param('id') id: string) {
+    findOne (@Param('id') id: number) {
         return this.recadosService.findOne(id);
     }
 
@@ -31,7 +31,7 @@ export class RecadosController {
 
     @HttpCode(HttpStatus.OK)
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updateRecadoDto: UpdateRecadoDto)
+    update(@Param('id') id: number, @Body() updateRecadoDto: UpdateRecadoDto)
     {
 
        return this.recadosService.update(id,updateRecadoDto)
