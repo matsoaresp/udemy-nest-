@@ -5,7 +5,7 @@ export class CreateRecadoDto {
     
     @IsString()
     @IsNotEmpty()
-    @MinLength(5)
+    @MinLength(100)
     texto: string;
 
     @IsString()
