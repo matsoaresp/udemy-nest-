@@ -11,6 +11,7 @@ import { CreateRecadoDto } from './dto/create-recado.dto';
 import { UpdateRecadoDto } from './dto/update-recado.dto';
 import { Person } from 'src/persons/entities/person.entity';
 import { PersonsService } from 'src/persons/persons.service';
+import { PaginationDto } from 'src/common/dto/pagination';
 
 @Injectable()
 export class RecadosService {
@@ -21,10 +22,19 @@ export class RecadosService {
    private readonly personService: PersonsService,
   ) {}
 
-  
-  async findAll() {
+  /*
+    Retorna todos os recados cadastrados
+    com os relacionamentos "de" e "para"
+    carregados parcialmente (id e nome)
+  */
+  async findAll(paginationDto: PaginationDto) {
+
+    const {limit = 10, offset = 0} = paginationDto;
+
     const recados = await this.recadoRepository.find({
-      relations: ['de', 'para' ],
+      take: limit,
+      skip: offset,
+      relations: ['de', 'para'],
       order: {
         id: 'asc',
       },
