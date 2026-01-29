@@ -1,8 +1,12 @@
 import { IsEmail, IsNotEmpty, IsString, IsStrongPassword, MaxLength, MinLength } from "class-validator";
 
-export class CreatePersonDto {
+        //DTO usado para validar e transportar dados
+export class CreatePersonDto { 
 
-
+    /*
+        NOTAÇÕES E VARIAVEIS
+        Notação para receber formatação de e-mail 
+    */
     @IsEmail()
     email: string
 

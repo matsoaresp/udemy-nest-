@@ -6,9 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Recados } from 'src/recados/entities/recados.entity';
 
 @Module({
-  controllers: [PersonsController],
+  controllers: [PersonsController], 
   providers: [PersonsService],
    imports: [TypeOrmModule.forFeature([Person]),],
-   exports: [PersonsService]
+   exports: [PersonsService] /*
+   Exporta o service de PersonsModule para outros modulos poder user
+  */
 })
 export class PersonsModule {}

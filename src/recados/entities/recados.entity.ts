@@ -1,36 +1,53 @@
 import { Person } from "src/persons/entities/person.entity";
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from "typeorm";
 
+/*
+  Entity que representa a tabela de recados no banco de dados.
+  Cada recado possui um remetente (de) e um destinatário (para).
+*/
 @Entity()
-export class Recados { 
+export class Recados {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  // Chave primária gerada automaticamente
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({type: 'varchar', length: 255})
-    texto: string;
+  // Conteúdo do recado
+  @Column({ type: 'varchar', length: 255 })
+  texto: string;
 
-    @Column({default: false})
-    lido?: boolean;
+  // Indica se o recado foi lido ou não
+  @Column({ default: false })
+  lido?: boolean;
 
-    @Column()    
-    data: Date;
+  // Data em que o recado foi criado (informada manualmente)
+  @Column()
+  data: Date;
 
-    @CreateDateColumn()
-    createdAt?: Date;
+  // Data de criação do registro (gerada automaticamente pelo banco)
+  @CreateDateColumn()
+  createdAt?: Date;
 
-    @UpdateDateColumn()
-    updatedAt?: Date;
+  // Data da última atualização do registro (gerada automaticamente pelo banco)
+  @UpdateDateColumn()
+  updatedAt?: Date;
 
-    @ManyToOne(() => Person, {onDelete: 'CASCADE'})
+  // Relacionamento com a pessoa que enviou o recado
+  // Caso a pessoa seja removida, os recados associados também serão removidos
+  @ManyToOne(() => Person, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'de' })
+  de: Person;
 
-
-    @ManyToOne(() => Person)
-    @JoinColumn({name: 'de'})
-    de: Person
-
-    @ManyToOne(() => Person)
-    @JoinColumn({name: 'para'})
-    para: Person
-
+  // Relacionamento com a pessoa que recebeu o recado
+  @ManyToOne(() => Person)
+  @JoinColumn({ name: 'para' })
+  para: Person;
 }
