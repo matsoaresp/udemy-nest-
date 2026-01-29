@@ -3,34 +3,41 @@ import { ColdObservable } from "rxjs/internal/testing/ColdObservable";
 import { Recados } from "src/recados/entities/recados.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
+    /*
+  Entity que representa a tabela Person no banco de dados
+*/
 @Entity()
 export class Person {
 
-    @PrimaryGeneratedColumn()
-    id:number;
+  @PrimaryGeneratedColumn()
+  // Chave primária auto incremental
+  id: number;
 
-    @Column({unique: true})
-    @IsEmail()
-    email: string;
+  @Column({ unique: true })
+  // Email único da pessoa
+  email: string;
 
-    @Column({length: 100})
-    passwordHash: string;
+  @Column({ length: 100 })
+  // Hash da senha do usuário
+  passwordHash: string;
 
-    @Column({length: 100})
-    nome: string;
+  @Column({ length: 100 })
+  // Nome da pessoa
+  nome: string;
 
-    @CreateDateColumn()
-    createdAt?: Date;
+  @CreateDateColumn()
+  // Data de criação do registro
+  createdAt?: Date;
 
-    @UpdateDateColumn()
-    updatedAt?: Date;
+  @UpdateDateColumn()
+  // Data da última atualização do registro
+  updatedAt?: Date;
 
-    @OneToMany(() => Recados, recado => recado.de)
-    @JoinColumn({name: 'recados_enviados'})
-    recados_enviados: Recados[];
+  @OneToMany(() => Recados, recado => recado.de)
+  // Recados enviados por esta pessoa
+  recados_enviados: Recados[];
 
-    @OneToMany(() => Recados, recados => recados.para)
-    @JoinColumn({name: 'enviados_para'})
-    recados_recebidos: Recados[];
-
+  @OneToMany(() => Recados, recado => recado.para)
+  // Recados recebidos por esta pessoa
+  recados_recebidos: Recados[];
 }
