@@ -1,145 +1,118 @@
-import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Recados } from './entities/recados.entity';
-import { last } from 'rxjs';
-import { CreateRecadoDto } from './dto/create-recado.dto';
-import { UpdateRecadoDto } from './dto/update-recado.dto';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
+import { Recados } from './entities/recados.entity';
+import { CreateRecadoDto } from './dto/create-recado.dto';
+import { UpdateRecadoDto } from './dto/update-recado.dto';
 import { Person } from 'src/persons/entities/person.entity';
+import { PersonsService } from 'src/persons/persons.service';
 
-@Injectable() //Código com persistencia de dados local (com array)
+@Injectable()
 export class RecadosService {
+  constructor(
+    @InjectRepository(Recados)
+    private readonly recadoRepository: Repository<Recados>,
 
-    constructor(
-        @InjectRepository(Recados)
-        private readonly recadoRepository: Repository<Recados>,
-        @InjectRepository(Person)
-        private readonly personRepository: Repository<Person>
-    ) {
+   private readonly personService: PersonsService,
+  ) {}
 
-
-
-    }
-    throwNotFoundError() {
-        throw new NotFoundException('Recado não encontrado')
-    }
-
-
-    async findAll() {
-
-        try {
-
-            const recados = await this.recadoRepository.find({
-                order: {
-                    id: 'asc'
-                }
-            });
-            return recados
-        } catch(error) {
-            if(error.code === '23505') {
-                throw new ConflictException('Erro ao localizar todos os recados');
-            }
+  
+  async findAll() {
+    const recados = await this.recadoRepository.find({
+      relations: ['de', 'para' ],
+      order: {
+        id: 'asc',
+      },
+      select: {
+        de: {
+          id: true,
+          nome: true,
+        },
+        para: {
+          id: true,
+          nome:true,
         }
+      }
+    });
 
-    }
+    return recados
+  }
 
-    async findOne(id: number) {
+  async findOne(id: number) {
+    const recado = await this.recadoRepository.findOne({
+      where: { id },
+    });
 
-
-        const recado = await this.recadoRepository.findOne({
-            where: {
-                id,
-            }
-        });
-
-        if(!recado) {
-            throw new NotFoundException('Recado não encontrado');
-        }
-        return recado;
+    if (!recado) {
+      throw new NotFoundException('Recado não encontrado');
     }
 
-    async create(createRecadoDto: CreateRecadoDto) {
-        try {
-            const pessoaDe = await this.personRepository.findOne({
-                where: { id: Number(createRecadoDto.de) },
-            });
+    return recado;
+  }
 
-            const pessoaPara = await this.personRepository.findOne({
-                where: { id: Number(createRecadoDto.para) },
-            });
+  async create(
+    createRecadoDto: CreateRecadoDto,
+  ) {
+    
+    const {deId, paraId} = createRecadoDto;
 
-            if(!pessoaDe || !pessoaPara) {
-                throw new NotFoundException('Pessoa não encontrada');
-            }
+    const de = await this.personService.findOne((deId))
+    const para = await this.personService.findOne((paraId))
 
-            const novoRecado = this.recadoRepository.create({
-                texto: createRecadoDto.texto,
-                de: pessoaDe,
-                para: pessoaPara,
-                data: new Date(),
-            });
+    const novoRecado = {
+      texto: createRecadoDto.texto,
+      de,
+      para,
+      lido: false,
+      data: new Date()
+    }
+    
+    if (!novoRecado) {
+      throw new NotFoundException("Não foi possivel criar o recado")
+    }
+    const recado = await this.recadoRepository.create(novoRecado)
+    await this.recadoRepository.save(recado)
+    return {
+      ...recado,
+      de: {
+        id: recado.de.id
+      },
+      para: {
+        id: recado.para.id
+      }
+    }
+  }
 
-            await this.recadoRepository.save(novoRecado);
-            return novoRecado;
+  async update(
+    id: number,
+    updateRecadoDto: UpdateRecadoDto,
+  ) {
 
-        } catch(error) {
-            if(error.code === '23505') {
-                throw new ConflictException('Erro ao cadastrar');
-            }
-            throw error;
-        }
+    const {deId, paraId} = updateRecadoDto
+
+    const recado = await this.findOne(id)
+    recado.texto = updateRecadoDto?.texto ?? recado.texto;
+    recado.lido = updateRecadoDto?.lido ?? recado.lido;
+    await this.recadoRepository.save(recado)
+    return recado
+
+  }
+
+  async delete(id: number) {
+    const recado = await this.recadoRepository.findOne({
+      where: { id },
+    });
+
+    if (!recado) {
+      throw new NotFoundException('Recado não encontrado');
     }
 
-
-    async update(id: number, updateRecadoDto: UpdateRecadoDto) {
-        const pessoaDe = updateRecadoDto.de
-            ? await this.personRepository.findOne({
-                where: { id: Number(updateRecadoDto.de) },
-            })
-            : undefined;
-
-        const pessoaPara = updateRecadoDto.para
-            ? await this.personRepository.findOne({
-                where: { id: Number(updateRecadoDto.para) },
-            })
-            : undefined;
-
-        if(updateRecadoDto.de && !pessoaDe) {
-            throw new NotFoundException('Pessoa "de" não encontrada');
-        }
-
-        if(updateRecadoDto.para && !pessoaPara) {
-            throw new NotFoundException('Pessoa "para" não encontrada');
-        }
-
-        const recado = await this.recadoRepository.preload({
-            id,
-            texto: updateRecadoDto.texto,
-            de: pessoaDe ?? undefined,
-            para: pessoaPara ?? undefined,
-        });
-
-
-        if(!recado) {
-            throw new NotFoundException('Recado não encontrado');
-        }
-
-        return this.recadoRepository.save(recado);
-    }
-
-
-
-    async delete(id: number) {
-        const recado = await this.recadoRepository.findOne({
-            where: { id },
-        });
-
-        if(!recado) {
-            throw new NotFoundException('Recado não encontrado');
-        }
-
-        await this.recadoRepository.remove(recado);
-        return recado;
-    }
+    await this.recadoRepository.remove(recado);
+    return recado;
+  }
 }
-

@@ -9,7 +9,6 @@ export class Person {
     @PrimaryGeneratedColumn()
     id:number;
 
-
     @Column({unique: true})
     @IsEmail()
     email: string;
@@ -26,6 +25,12 @@ export class Person {
     @UpdateDateColumn()
     updatedAt?: Date;
 
-    
+    @OneToMany(() => Recados, recado => recado.de)
+    @JoinColumn({name: 'recados_enviados'})
+    recados_enviados: Recados[];
+
+    @OneToMany(() => Recados, recados => recados.para)
+    @JoinColumn({name: 'enviados_para'})
+    recados_recebidos: Recados[];
 
 }

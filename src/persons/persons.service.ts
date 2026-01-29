@@ -51,9 +51,18 @@ export class PersonsService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} person`;
+  async findOne(id: number): Promise<Person> {
+  const person = await this.personRepository.findOne({
+    where: { id },
+  });
+
+  if (!person) {
+    throw new NotFoundException('Person não encontrada');
   }
+
+  return person;
+}
+
 
   async update(id: number, updatePersonDto: UpdatePersonDto) {
     const person = await this.personRepository.preload({

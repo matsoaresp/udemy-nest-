@@ -2,7 +2,7 @@ import { Person } from "src/persons/entities/person.entity";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
-export class Recados { // Entitie sem typeOrm
+export class Recados { 
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -11,7 +11,7 @@ export class Recados { // Entitie sem typeOrm
     texto: string;
 
     @Column({default: false})
-    lido: boolean;
+    lido?: boolean;
 
     @Column()    
     data: Date;
@@ -21,6 +21,9 @@ export class Recados { // Entitie sem typeOrm
 
     @UpdateDateColumn()
     updatedAt?: Date;
+
+    @ManyToOne(() => Person, {onDelete: 'CASCADE'})
+
 
     @ManyToOne(() => Person)
     @JoinColumn({name: 'de'})
