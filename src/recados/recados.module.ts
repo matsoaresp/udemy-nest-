@@ -6,10 +6,11 @@ import { Recados } from './entities/recados.entity';
 import { Person } from 'src/persons/entities/person.entity';
 import { PersonsModule } from 'src/persons/persons.module';
 
-@Module({ //Código com persistencia de dados local
+@Module({ 
   controllers: [RecadosController], 
   providers: [RecadosService],
-  imports: [TypeOrmModule.forFeature([Recados]), PersonsModule]
+  // Importa modulos que vão ser usados dentro de recados 
+  imports: [TypeOrmModule.forFeature([Recados]), PersonsModule] 
 })
 export class RecadosModule {
     

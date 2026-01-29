@@ -1,8 +1,12 @@
 import { IsNotEmpty, IsPositive, IsString, MinLength } from "class-validator";
 
-
-export class CreateRecadoDto {
+// DTO para validação de transporte de dados
+export class CreateRecadoDto { 
     
+
+     /*
+        NOTAÇÕES E VARIAVEIS
+    */
     @IsString()
     @IsNotEmpty()
     @MinLength(100)
