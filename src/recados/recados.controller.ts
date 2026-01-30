@@ -1,13 +1,15 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, NotFoundException, Param, Patch, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, NotFoundException, Param, Patch, Post, Put, Query, UseInterceptors } from '@nestjs/common';
 import { RecadosService } from './recados.service';
 import { CreateRecadoDto } from './dto/create-recado.dto';
 import { UpdateRecadoDto } from './dto/update-recado.dto';
+import { TimmingConnectionInterceptor } from 'src/common/interceptors/timing-connection.interceptor';
+import { ErrorHandlingInterceptor } from 'src/common/interceptors/error-handling.interceptor';
 
+@UseInterceptors(TimmingConnectionInterceptor, ErrorHandlingInterceptor)
 @Controller('recados') //Código com persistencia de dados local
 export class RecadosController {
 
     constructor(private readonly recadosService: RecadosService) {
-
     }
 
     @HttpCode(HttpStatus.OK)

@@ -1,6 +1,8 @@
-import { NestInterceptor, ExecutionContext, CallHandler } from "@nestjs/common";
+import { NestInterceptor, ExecutionContext, CallHandler, Injectable } from "@nestjs/common";
 import { Observable, tap } from "rxjs";
 
+
+@Injectable()
 export class TimmingConnectionInterceptor implements NestInterceptor {
     async intercept(context: ExecutionContext, next: CallHandler<any>) {
         const now = Date.now();
