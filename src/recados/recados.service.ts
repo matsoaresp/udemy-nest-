@@ -9,7 +9,6 @@ import { Repository } from 'typeorm';
 import { Recados } from './entities/recados.entity';
 import { CreateRecadoDto } from './dto/create-recado.dto';
 import { UpdateRecadoDto } from './dto/update-recado.dto';
-import { Person } from 'src/persons/entities/person.entity';
 import { PersonsService } from 'src/persons/persons.service';
 
 @Injectable()
@@ -92,8 +91,6 @@ export class RecadosService {
     id: number,
     updateRecadoDto: UpdateRecadoDto,
   ) {
-
-    const {deId, paraId} = updateRecadoDto
 
     const recado = await this.findOne(id)
     recado.texto = updateRecadoDto?.texto ?? recado.texto;
