@@ -96,8 +96,15 @@ export class RecadosService {
     recado.texto = updateRecadoDto?.texto ?? recado.texto;
     recado.lido = updateRecadoDto?.lido ?? recado.lido;
     await this.recadoRepository.save(recado)
-    return recado
-
+    return {
+      ...recado,
+      deId: {
+        id: recado.de.id
+      },
+      paraId: {
+        id: recado.para.id
+      }
+    }
   }
 
   async delete(id: number) {
