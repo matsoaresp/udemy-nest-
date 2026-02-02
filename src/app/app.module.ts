@@ -6,10 +6,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SongsModule } from 'src/songs/songs.module';
 import { PersonsModule } from 'src/persons/persons.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import jwtConfig from 'src/auth/config/jwt.config';
 
 @Module({
   imports: [ 
     RecadosModule,
+    ConfigModule.forRoot({
+      isGlobal:true,
+      load: [jwtConfig],
+    }),
     SongsModule,
     PersonsModule,
     AuthModule,
