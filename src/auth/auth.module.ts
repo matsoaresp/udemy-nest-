@@ -5,7 +5,7 @@ import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Person } from "src/persons/entities/person.entity";
-import {JwtModule} from '@nestjs/jwt'
+import {JwtModule, JwtService} from '@nestjs/jwt'
 import { ConfigModule } from "@nestjs/config";
 import jwtConfig from "./config/jwt.config";
 
@@ -24,7 +24,7 @@ import jwtConfig from "./config/jwt.config";
         },
         AuthService
     ],
-    exports: [HashingServiceProtocol]
+    exports: [HashingServiceProtocol, JwtModule, ConfigModule]
 
 })
 export class AuthModule {
