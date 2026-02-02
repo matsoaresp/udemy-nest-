@@ -5,12 +5,14 @@ import { RecadosModule } from 'src/recados/recados.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SongsModule } from 'src/songs/songs.module';
 import { PersonsModule } from 'src/persons/persons.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [ 
     RecadosModule,
     SongsModule,
     PersonsModule,
+    AuthModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',

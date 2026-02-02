@@ -17,7 +17,7 @@ export class Person {
   // Email único da pessoa
   email: string;
 
-  @Column({ length: 100 })
+  @Column({ type: 'varchar', length: 1000 })
   // Hash da senha do usuário
   passwordHash: string;
 

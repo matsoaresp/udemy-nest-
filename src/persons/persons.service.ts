@@ -5,19 +5,24 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Person } from './entities/person.entity';
 import { Repository } from 'typeorm';
 import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
+import { HashingServiceProtocol } from 'src/auth/hashing/hashing.service';
 
 @Injectable()  // Marca a classe como provider para injeção de dependência
 export class PersonsService {
 
   constructor(@InjectRepository(Person) // Injeta o repositório do TypeORM para operações no banco
-  private readonly personRepository: Repository<Person>) {
-
-  }
+  private readonly personRepository: Repository<Person>,
+  private readonly hashingServiceProtocol: HashingServiceProtocol)
+  {}
   async create(createPersonDto: CreatePersonDto) {
     try {
+    const passwordHash = await this.hashingServiceProtocol.hash(
+      createPersonDto.password,
+    );
+      
     const personData = { // Mapeia os dados do DTO para criação da entidade
       nome: createPersonDto.nome,
-      passwordHash: createPersonDto.password,
+      passwordHash: passwordHash,
       email: createPersonDto.email,
     }
     const novaPessoa = this.personRepository.create(personData) // Cria a instância da entidade (não persiste) 
@@ -69,11 +74,25 @@ export class PersonsService {
 
   async update(id: number, updatePersonDto: UpdatePersonDto) {
     // Carrega a pessoa existente e aplica os dados de atualização
+
+      const dadosPessoa = {
+        nome: updatePersonDto?.nome,
+      };
+
+     if(updatePersonDto?.password) {
+      const passwordHash = await this.hashingServiceProtocol.hash(
+        updatePersonDto.password
+      );
+
+      dadosPessoa['passwordHash'] = passwordHash;
+    }
+
     const person = await this.personRepository.preload({ 
         id,
         email: updatePersonDto?.email,
         nome: updatePersonDto?.nome,
     }) 
+ 
 
     if (!person) { // Se não encontrar lança uma exceção e encerra a execução
       throw new NotFoundException('Pessoa não encontrada')
