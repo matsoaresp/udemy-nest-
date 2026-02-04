@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { UpdatePersonDto } from './dto/update-person.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,6 +6,7 @@ import { Person } from './entities/person.entity';
 import { Repository } from 'typeorm';
 import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 import { HashingServiceProtocol } from 'src/auth/hashing/hashing.service';
+import { TokenPayloadDto } from 'src/auth/dto/token-payload.dto';
 
 @Injectable()  // Marca a classe como provider para injeção de dependência
 export class PersonsService {
@@ -72,7 +73,10 @@ export class PersonsService {
 }
 
 
-  async update(id: number, updatePersonDto: UpdatePersonDto) {
+  async update(id: number, 
+    updatePersonDto: UpdatePersonDto,
+    tokenPayload: TokenPayloadDto,
+  ) {
     // Carrega a pessoa existente e aplica os dados de atualização
 
       const dadosPessoa = {
@@ -98,6 +102,10 @@ export class PersonsService {
       throw new NotFoundException('Pessoa não encontrada')
     }
 
+    if (person.id !== tokenPayload.sub){
+        throw new ForbiddenException('Voce não é essa pessoa')
+    }
+    
     return this.personRepository.save(person) // Salva as alterações no banco de dados
   }
 
