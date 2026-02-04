@@ -1,3 +1,4 @@
+import { Exclude } from "class-transformer";
 import { IsEmail, isEmail } from "class-validator";
 import { ColdObservable } from "rxjs/internal/testing/ColdObservable";
 import { Recados } from "src/recados/entities/recados.entity";
@@ -17,6 +18,7 @@ export class Person {
   // Email único da pessoa
   email: string;
 
+  @Exclude()
   @Column({ type: 'varchar', length: 1000 })
   // Hash da senha do usuário
   passwordHash: string;
